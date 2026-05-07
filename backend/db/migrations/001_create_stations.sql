@@ -1,8 +1,6 @@
--- Enable PostGIS extension
+-- Up Migration
 CREATE EXTENSION IF NOT EXISTS postgis;
 
--- Stations table with geospatial column
--- PostGIS-schema-evolution lens: additive migrations, nullable cols for safe rollout
 CREATE TABLE IF NOT EXISTS stations (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     idempotency_key UUID UNIQUE NOT NULL,
@@ -17,10 +15,8 @@ CREATE TABLE IF NOT EXISTS stations (
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- GIST spatial index for ST_DWithin radius queries
 CREATE INDEX IF NOT EXISTS stations_location_gist ON stations USING GIST (location);
 
--- Check-ins table
 CREATE TABLE IF NOT EXISTS check_ins (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     idempotency_key UUID UNIQUE NOT NULL,
@@ -32,3 +28,9 @@ CREATE TABLE IF NOT EXISTS check_ins (
 );
 
 CREATE INDEX IF NOT EXISTS check_ins_station_id_idx ON check_ins (station_id);
+
+-- Down Migration
+DROP INDEX IF EXISTS check_ins_station_id_idx;
+DROP TABLE IF EXISTS check_ins;
+DROP INDEX IF EXISTS stations_location_gist;
+DROP TABLE IF EXISTS stations;
