@@ -1,0 +1,62 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'backend/**'
+      - 'docker-compose.yml'
+      - '.github/workflows/backend-ci.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'backend/**'
+
+jobs:
+  lint-test-build:
+    name: Lint + Test + Build
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4-alpine
+        env:
+          POSTGRES_USER: jib
+          POSTGRES_PASSWORD: jib_dev
+          POSTGRES_DB: jib
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Run lint
+        working-directory: backend
+        run: npm run lint
+
+      - name: Run tests
+        working-directory: backend
+        env:
+          DATABASE_URL: postgres://jib:jib_dev@localhost:5432/jib
+          NODE_ENV: test
+        run: npm test
+
+      - name: Build TypeScript
+        working-directory: backend
+        run: npm run build

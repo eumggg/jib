@@ -1,0 +1,64 @@
+name: Android CI
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'android/**'
+      - '.github/workflows/android-ci.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'android/**'
+
+jobs:
+  lint-and-build:
+    name: Lint + assembleDebug
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('android/**/*.gradle*', 'android/gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
+
+      - name: Create local.properties
+        working-directory: android
+        run: |
+          echo "MAPS_API_KEY=${{ secrets.MAPS_API_KEY || 'CI_PLACEHOLDER' }}" > local.properties
+          echo "API_BASE_URL=http://localhost:3000" >> local.properties
+          echo "sdk.dir=$ANDROID_SDK_ROOT" >> local.properties
+
+      - name: Grant execute permission for gradlew
+        working-directory: android
+        run: chmod +x gradlew
+
+      - name: Run lint
+        working-directory: android
+        run: ./gradlew lint --continue
+
+      - name: Assemble Debug
+        working-directory: android
+        run: ./gradlew assembleDebug
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: warn

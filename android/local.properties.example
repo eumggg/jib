@@ -1,0 +1,11 @@
+## Copy this file to local.properties and fill in real values.
+## DO NOT commit local.properties to version control.
+
+# Google Maps API key (obtain from Google Cloud Console, restrict to Android app)
+MAPS_API_KEY=YOUR_GOOGLE_MAPS_API_KEY
+
+# Backend base URL (default points to Android emulator localhost)
+API_BASE_URL=http://10.0.2.2:3000
+
+# Android SDK path (set by Android Studio automatically)
+# sdk.dir=/Users/you/Library/Android/sdk
