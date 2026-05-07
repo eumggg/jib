@@ -50,6 +50,12 @@ jobs:
         working-directory: backend
         run: npm run lint
 
+      - name: Run migrations
+        working-directory: backend
+        env:
+          DATABASE_URL: postgres://jib:jib_dev@localhost:5432/jib
+        run: npm run migrate:up
+
       - name: Run tests
         working-directory: backend
         env:

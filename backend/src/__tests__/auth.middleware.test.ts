@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 
 // Mock firebase-admin before importing the middleware under test.
 // The factory runs at hoist-time, so we embed the mock fn reference inside the module.
