@@ -36,3 +36,12 @@ export interface CreateCheckInDto {
   rating?: number;
   comment?: string;
 }
+
+export interface User {
+  id: string;
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  createdAt: string;
+  updatedAt: string;
+}

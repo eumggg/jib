@@ -27,7 +27,7 @@ checkInsRouter.post('/', requireAuth, async (req: AuthenticatedRequest, res: Res
        VALUES ($1, $2, $3, $4, $5)
        RETURNING id, station_id AS "stationId", user_uid AS "userId",
                  rating, comment, created_at AS "createdAt"`,
-      [idempotencyKey, stationId, req.uid, rating ?? null, comment ?? null]
+      [idempotencyKey, stationId, req.user?.uid, rating ?? null, comment ?? null]
     );
     res.status(201).json(checkIn);
   } catch (err) {

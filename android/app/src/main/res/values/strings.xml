@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">JIB</string>
+    <!-- Overridden automatically by google-services plugin when a real google-services.json is present.
+         Replace with your Firebase web client OAuth 2.0 client ID from the Firebase console. -->
+    <string name="default_web_client_id">REPLACE_WITH_FIREBASE_WEB_CLIENT_ID</string>
 </resources>

@@ -79,6 +79,7 @@ dependencies {
     implementation(libs.firebase.storage)
 
     implementation(libs.play.services.maps)
+    implementation(libs.play.services.auth)
     implementation(libs.maps.compose)
 
     implementation(libs.androidx.room.runtime)
@@ -91,8 +92,11 @@ dependencies {
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

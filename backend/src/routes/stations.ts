@@ -83,7 +83,7 @@ stationsRouter.post('/', requireAuth, async (req: AuthenticatedRequest, res: Res
         connectorTypes ?? [],
         powerKw ?? null,
         networkOperator ?? null,
-        req.uid,
+        req.user?.uid,
       ]
     );
     res.status(201).json(station);
