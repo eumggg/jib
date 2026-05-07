@@ -44,6 +44,33 @@ jobs:
           echo "API_BASE_URL=http://localhost:3000" >> local.properties
           echo "sdk.dir=$ANDROID_SDK_ROOT" >> local.properties
 
+      - name: Create google-services.json placeholder
+        working-directory: android/app
+        run: |
+          cat > google-services.json << 'JSON'
+          {
+            "project_info": {
+              "project_number": "000000000000",
+              "project_id": "jib-ci-placeholder",
+              "storage_bucket": "jib-ci-placeholder.appspot.com"
+            },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "1:000000000000:android:0000000000000000",
+                  "android_client_info": {
+                    "package_name": "com.jib.app"
+                  }
+                },
+                "oauth_client": [],
+                "api_key": [{ "current_key": "CI_PLACEHOLDER" }],
+                "services": { "appinvite_service": { "other_platform_oauth_client": [] } }
+              }
+            ],
+            "configuration_version": "1"
+          }
+          JSON
+
       - name: Grant execute permission for gradlew
         working-directory: android
         run: chmod +x gradlew
