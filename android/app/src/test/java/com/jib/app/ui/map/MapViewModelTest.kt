@@ -44,6 +44,10 @@ class MapViewModelTest {
 
         override fun getStation(id: String): Flow<Station?> = flowOf(null)
         override suspend fun refreshStation(id: String) = Unit
+        override suspend fun submitStation(
+            idempotencyKey: String, name: String, latitude: Double, longitude: Double,
+            connectorTypes: List<String>, powerKw: Double?, networkOperator: String?,
+        ): Result<Station> = Result.failure(UnsupportedOperationException())
     }
 
     private class RecordingRepo : StationRepository {
@@ -57,6 +61,10 @@ class MapViewModelTest {
         }
         override fun getStation(id: String): Flow<Station?> = flowOf(null)
         override suspend fun refreshStation(id: String) = Unit
+        override suspend fun submitStation(
+            idempotencyKey: String, name: String, latitude: Double, longitude: Double,
+            connectorTypes: List<String>, powerKw: Double?, networkOperator: String?,
+        ): Result<Station> = Result.failure(UnsupportedOperationException())
     }
 
     @Test

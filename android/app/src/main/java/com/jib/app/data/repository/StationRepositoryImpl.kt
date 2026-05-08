@@ -3,6 +3,7 @@ package com.jib.app.data.repository
 import com.google.gson.Gson
 import com.jib.app.data.local.StationDao
 import com.jib.app.data.model.Station
+import com.jib.app.data.remote.CreateStationRequest
 import com.jib.app.data.remote.StationApiService
 import com.jib.app.data.remote.StationDto
 import kotlinx.coroutines.flow.Flow
@@ -50,6 +51,32 @@ class StationRepositoryImpl @Inject constructor(
 
     override suspend fun refreshStation(id: String) {
         dao.upsert(api.getStation(id).toEntity())
+    }
+
+    override suspend fun submitStation(
+        idempotencyKey: String,
+        name: String,
+        latitude: Double,
+        longitude: Double,
+        connectorTypes: List<String>,
+        powerKw: Double?,
+        networkOperator: String?,
+    ): Result<Station> = runCatching {
+        val created = api.createStation(
+            CreateStationRequest(
+                idempotencyKey = idempotencyKey,
+                name = name,
+                latitude = latitude,
+                longitude = longitude,
+                connectorTypes = connectorTypes,
+                powerKw = powerKw,
+                networkOperator = networkOperator,
+            )
+        )
+        // Cache the new row so the map's Room flow emits with the new marker.
+        val entity = created.toEntity()
+        dao.upsert(entity)
+        entity
     }
 
     private fun StationDto.toEntity() = Station(
