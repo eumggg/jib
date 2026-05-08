@@ -76,7 +76,7 @@ class MapViewModel @Inject constructor(
         }
     }
 
-    override fun onCleared() {
+    public override fun onCleared() {
         super.onCleared()
         fetchJob?.cancel()
     }
