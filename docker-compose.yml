@@ -32,12 +32,12 @@ services:
       CORS_ORIGIN: ${CORS_ORIGIN:-*}
       JWT_SECRET: ${JWT_SECRET:-dev-only-jwt-secret-change-me}
       FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID:-jib-demo}
-      FIREBASE_SERVICE_ACCOUNT_JSON: ${FIREBASE_SERVICE_ACCOUNT_JSON:-}
-      # Defaults to empty (production/real-credentials mode).
-      # Set FIREBASE_AUTH_EMULATOR_HOST=host.docker.internal:9099 in .env to use the emulator.
+      GOOGLE_APPLICATION_CREDENTIALS: /app/serviceAccountKey.json
       FIREBASE_AUTH_EMULATOR_HOST: ${FIREBASE_AUTH_EMULATOR_HOST:-}
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    volumes:
+      - ./backend/serviceAccountKey.json:/app/serviceAccountKey.json:ro
     ports:
       - "3000:3000"
     # Run migrations then start the compiled server.

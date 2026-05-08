@@ -16,12 +16,14 @@ if (admin.apps.length === 0) {
         JSON.parse(serviceAccountJson) as admin.ServiceAccount
       ),
     });
-    console.log('Firebase Admin initialized');
+    console.log('Firebase Admin initialized (service account JSON)');
+  } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    admin.initializeApp();
+    console.log('Firebase Admin initialized (ADC file)');
   } else if (process.env.FIREBASE_AUTH_EMULATOR_HOST) {
     admin.initializeApp({ projectId: process.env.GCLOUD_PROJECT ?? 'jib-demo' });
     console.log('Firebase Admin initialized (emulator mode)');
   } else if (process.env.NODE_ENV !== 'test') {
-    // ADC fallback for cloud environments (e.g. Cloud Run with Workload Identity)
     admin.initializeApp();
     console.log('Firebase Admin initialized (ADC)');
   }
