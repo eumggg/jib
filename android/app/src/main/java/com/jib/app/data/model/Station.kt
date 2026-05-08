@@ -2,7 +2,6 @@ package com.jib.app.data.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -16,6 +15,7 @@ data class Station(
     val powerKw: Double?,
     val networkOperator: String?,
     val isAvailable: Boolean,
+    val address: String? = null,
 ) {
     fun connectorTypeList(): List<String> =
         Gson().fromJson(connectorTypes, object : TypeToken<List<String>>() {}.type)

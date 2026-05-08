@@ -17,18 +17,40 @@ class StationRepositoryImpl @Inject constructor(
 ) : StationRepository {
 
     // Offline-first lens: Room emits cached rows immediately; network refresh upserts on top.
+    // The connector filter is applied at both layers so both the cached and refreshed sets
+    // honor the active filter.
     override fun getStations(
         swLat: Double, swLng: Double, neLat: Double, neLng: Double,
-    ): Flow<List<Station>> =
-        dao.getStationsInBounds(swLat, swLng, neLat, neLng)
+        connectorType: String?,
+    ): Flow<List<Station>> {
+        val cached = if (connectorType == null) {
+            dao.getStationsInBounds(swLat, swLng, neLat, neLng)
+        } else {
+            dao.getStationsInBoundsByConnector(swLat, swLng, neLat, neLng, connectorType)
+        }
+        return cached.onStart {
+            try {
+                val remote = api.getStations(swLat, swLng, neLat, neLng, connectorType)
+                dao.upsertAll(remote.stations.map { it.toEntity() })
+            } catch (_: Exception) {
+                // Network unavailable — Room cache serves below.
+            }
+        }
+    }
+
+    override fun getStation(id: String): Flow<Station?> =
+        dao.getStationById(id)
             .onStart {
                 try {
-                    val remote = api.getStations(swLat, swLng, neLat, neLng)
-                    dao.upsertAll(remote.stations.map { it.toEntity() })
+                    dao.upsert(api.getStation(id).toEntity())
                 } catch (_: Exception) {
-                    // Network unavailable — Room cache serves below.
+                    // Cache will serve; the ViewModel's refreshStation call surfaces errors.
                 }
             }
+
+    override suspend fun refreshStation(id: String) {
+        dao.upsert(api.getStation(id).toEntity())
+    }
 
     private fun StationDto.toEntity() = Station(
         id = id,
@@ -39,5 +61,6 @@ class StationRepositoryImpl @Inject constructor(
         powerKw = powerKw,
         networkOperator = networkOperator,
         isAvailable = isAvailable,
+        address = address,
     )
 }

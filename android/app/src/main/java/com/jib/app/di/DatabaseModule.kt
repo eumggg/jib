@@ -17,7 +17,9 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext ctx: Context): JibDatabase =
-        Room.databaseBuilder(ctx, JibDatabase::class.java, "jib.db").build()
+        Room.databaseBuilder(ctx, JibDatabase::class.java, "jib.db")
+            .fallbackToDestructiveMigration()
+            .build()
 
     @Provides
     fun provideStationDao(db: JibDatabase): StationDao = db.stationDao()

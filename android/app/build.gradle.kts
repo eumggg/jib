@@ -27,8 +27,10 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        manifestPlaceholders["MAPS_API_KEY"] =
-            localProps.getProperty("MAPS_API_KEY", "YOUR_MAPS_API_KEY_HERE")
+        val mapsApiKey = localProps.getProperty("MAPS_API_KEY", "YOUR_MAPS_API_KEY_HERE")
+        manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
+        // Same key powers the Places SDK (initialized at app start with this value).
+        buildConfigField("String", "MAPS_API_KEY", "\"$mapsApiKey\"")
         buildConfigField("String", "API_BASE_URL",
             "\"${localProps.getProperty("API_BASE_URL", "http://10.0.2.2:3000")}\"")
     }
@@ -71,6 +73,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.navigation.compose)
 
     implementation(platform(libs.firebase.bom))
@@ -81,6 +84,8 @@ dependencies {
     implementation(libs.play.services.maps)
     implementation(libs.play.services.auth)
     implementation(libs.maps.compose)
+    implementation(libs.places)
+    implementation(libs.kotlinx.coroutines.play.services)
 
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)

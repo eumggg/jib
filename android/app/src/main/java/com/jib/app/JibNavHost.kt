@@ -57,8 +57,10 @@ fun JibNavHost(
         composable(
             route = ROUTE_STATION,
             arguments = listOf(navArgument("stationId") { type = NavType.StringType }),
-        ) { back ->
-            StationDetailScreen(stationId = back.arguments?.getString("stationId") ?: "")
+        ) {
+            // stationId is read by StationDetailViewModel via SavedStateHandle.
+            // Back navigation pops the back stack so the map keeps its camera position.
+            StationDetailScreen(onBack = { navController.popBackStack() })
         }
     }
 }

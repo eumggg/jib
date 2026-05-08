@@ -4,5 +4,26 @@ import com.jib.app.data.model.Station
 import kotlinx.coroutines.flow.Flow
 
 interface StationRepository {
-    fun getStations(swLat: Double, swLng: Double, neLat: Double, neLng: Double): Flow<List<Station>>
+    /**
+     * Bounding-box list, optionally filtered to stations whose connectorTypes
+     * include `connectorType` (wire value, e.g. "CCS"). When null, no filter
+     * is applied either client-side or server-side.
+     */
+    fun getStations(
+        swLat: Double,
+        swLng: Double,
+        neLat: Double,
+        neLng: Double,
+        connectorType: String? = null,
+    ): Flow<List<Station>>
+
+    /**
+     * Offline-first: emits the cached row immediately (or null if absent), then
+     * upserts the remote response so the same Flow emits the fresh data. The
+     * caller decides how to surface the loading/error states.
+     */
+    fun getStation(id: String): Flow<Station?>
+
+    /** Force a network refresh for a single station; throws on network/API errors. */
+    suspend fun refreshStation(id: String)
 }
