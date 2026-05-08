@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
@@ -52,6 +53,7 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
@@ -71,6 +73,7 @@ private const val PLACE_ZOOM = 14f
 fun MapScreen(
     onStationClick: (stationId: String) -> Unit,
     onAddStation: () -> Unit = {},
+    onOpenProfile: () -> Unit = {},
     viewModel: MapViewModel = hiltViewModel(),
     searchViewModel: SearchViewModel = hiltViewModel(),
     authViewModel: AuthViewModel = hiltViewModel(),
@@ -133,9 +136,15 @@ fun MapScreen(
             },
         ) {
             uiState.stations.forEach { station ->
+                val isLive = isCheckInRecent(station.recentCheckInAt)
                 Marker(
                     state = MarkerState(LatLng(station.latitude, station.longitude)),
                     title = station.name,
+                    snippet = if (isLive) "Active in the last 2h" else null,
+                    icon = BitmapDescriptorFactory.defaultMarker(
+                        if (isLive) BitmapDescriptorFactory.HUE_GREEN
+                        else BitmapDescriptorFactory.HUE_RED
+                    ),
                     onClick = {
                         onStationClick(station.id)
                         true
@@ -157,6 +166,8 @@ fun MapScreen(
                 onClear = searchViewModel::clearQuery,
                 onOpenFilter = { showFilterSheet = true },
                 hasActiveFilter = uiState.selectedConnector != null,
+                onProfileClick = onOpenProfile,
+                showProfile = currentUser != null,
             )
 
             if (searchState.isExpanded && searchState.suggestions.isNotEmpty()) {
@@ -292,6 +303,8 @@ private fun SearchBarRow(
     onClear: () -> Unit,
     onOpenFilter: () -> Unit,
     hasActiveFilter: Boolean,
+    onProfileClick: () -> Unit,
+    showProfile: Boolean,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -328,7 +341,45 @@ private fun SearchBarRow(
                 contentDescription = if (hasActiveFilter) "Filter (active)" else "Filter",
             )
         }
+
+        if (showProfile) {
+            FilledIconButton(onClick = onProfileClick) {
+                Icon(Icons.Filled.Person, contentDescription = "Profile")
+            }
+        }
     }
+}
+
+/**
+ * "Live" if a check-in occurred within the last 2 hours.
+ * Backend ships `recentCheckInAt` as ISO-8601 (e.g. `2026-05-08T20:09:19.283Z`).
+ * minSdk is 24, so we parse via SimpleDateFormat instead of java.time (which would
+ * require core library desugaring).
+ */
+internal fun isCheckInRecent(iso: String?): Boolean {
+    if (iso.isNullOrBlank()) return false
+    val parsed = parseIsoMillis(iso) ?: return false
+    val cutoff = System.currentTimeMillis() - 2L * 60 * 60 * 1000
+    return parsed > cutoff
+}
+
+private fun parseIsoMillis(iso: String): Long? {
+    val patterns = listOf(
+        "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
+        "yyyy-MM-dd'T'HH:mm:ssXXX",
+        "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+        "yyyy-MM-dd'T'HH:mm:ss'Z'",
+    )
+    for (p in patterns) {
+        try {
+            val fmt = java.text.SimpleDateFormat(p, java.util.Locale.US)
+            fmt.timeZone = java.util.TimeZone.getTimeZone("UTC")
+            return fmt.parse(iso)?.time
+        } catch (_: Exception) {
+            // try next pattern
+        }
+    }
+    return null
 }
 
 @Composable

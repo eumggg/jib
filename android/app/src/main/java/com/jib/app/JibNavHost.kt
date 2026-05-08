@@ -13,6 +13,7 @@ import com.jib.app.auth.AuthViewModel
 import com.jib.app.auth.LoginScreen
 import com.jib.app.auth.RegisterScreen
 import com.jib.app.ui.map.MapScreen
+import com.jib.app.ui.profile.ProfileScreen
 import com.jib.app.ui.station.StationDetailScreen
 import com.jib.app.ui.submit.SubmitStationScreen
 
@@ -21,6 +22,7 @@ private const val ROUTE_LOGIN = "login"
 private const val ROUTE_REGISTER = "register"
 private const val ROUTE_STATION = "station/{stationId}"
 private const val ROUTE_SUBMIT = "submit-station"
+private const val ROUTE_PROFILE = "profile"
 
 @Composable
 fun JibNavHost(
@@ -29,7 +31,6 @@ fun JibNavHost(
     val navController = rememberNavController()
     val currentUser by authViewModel.currentUser.collectAsStateWithLifecycle()
 
-    // Start at login when unauthenticated, map when authenticated.
     val startDestination = if (currentUser != null) ROUTE_MAP else ROUTE_LOGIN
 
     NavHost(navController = navController, startDestination = startDestination) {
@@ -57,20 +58,27 @@ fun JibNavHost(
             MapScreen(
                 onStationClick = { id -> navController.navigate("station/$id") },
                 onAddStation = { navController.navigate(ROUTE_SUBMIT) },
+                onProfileClick = { navController.navigate(ROUTE_PROFILE) },
             )
         }
         composable(
             route = ROUTE_STATION,
             arguments = listOf(navArgument("stationId") { type = NavType.StringType }),
         ) {
-            // stationId is read by StationDetailViewModel via SavedStateHandle.
-            // Back navigation pops the back stack so the map keeps its camera position.
             StationDetailScreen(onBack = { navController.popBackStack() })
         }
         composable(ROUTE_SUBMIT) {
             SubmitStationScreen(
                 onClose = { navController.popBackStack() },
                 onSubmitted = { navController.popBackStack() },
+            )
+        }
+        composable(ROUTE_PROFILE) {
+            ProfileScreen(
+                onBack = { navController.popBackStack() },
+                onStationClick = { id ->
+                    navController.navigate("station/$id")
+                },
             )
         }
     }

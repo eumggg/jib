@@ -35,7 +35,7 @@ export async function requireAuth(
 ): Promise<void> {
   const authHeader = req.headers.authorization;
   if (!authHeader?.startsWith('Bearer ')) {
-    res.status(401).json({ error: 'Missing or invalid Authorization header' });
+    res.status(401).json({ error: 'unauthorized', message: 'Missing or invalid Authorization header' });
     return;
   }
   const idToken = authHeader.slice(7);
@@ -44,6 +44,6 @@ export async function requireAuth(
     req.user = { uid: decoded.uid, email: decoded.email };
     next();
   } catch {
-    res.status(401).json({ error: 'Invalid or expired token' });
+    res.status(401).json({ error: 'unauthorized', message: 'Invalid or expired token' });
   }
 }

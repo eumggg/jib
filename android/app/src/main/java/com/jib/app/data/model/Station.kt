@@ -16,6 +16,9 @@ data class Station(
     val networkOperator: String?,
     val isAvailable: Boolean,
     val address: String? = null,
+    val avgRating: Double? = null,
+    // ISO-8601 timestamp string from the backend; parsed where we need it.
+    val recentCheckInAt: String? = null,
 ) {
     fun connectorTypeList(): List<String> =
         Gson().fromJson(connectorTypes, object : TypeToken<List<String>>() {}.type)

@@ -84,7 +84,6 @@ dependencies {
 
     implementation(libs.play.services.maps)
     implementation(libs.play.services.auth)
-    implementation(libs.play.services.location)
     implementation(libs.maps.compose)
     implementation(libs.places)
     implementation(libs.kotlinx.coroutines.play.services)
@@ -101,6 +100,8 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    implementation(libs.coil.compose)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

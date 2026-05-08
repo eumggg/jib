@@ -89,5 +89,7 @@ class StationRepositoryImpl @Inject constructor(
         networkOperator = networkOperator,
         isAvailable = isAvailable,
         address = address,
+        avgRating = avgRating,
+        recentCheckInAt = recentCheckInAt,
     )
 }

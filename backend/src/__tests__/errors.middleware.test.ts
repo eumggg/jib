@@ -7,7 +7,7 @@ function buildApp(): express.Express {
   app.use(express.json());
 
   app.get('/throw-http', () => {
-    throw new HttpError(403, 'forbidden', 'Not allowed', { reason: 'rbac' });
+    throw new HttpError(403, 'forbidden', 'Not allowed');
   });
 
   app.get('/throw-generic', () => {
@@ -24,15 +24,17 @@ describe('error middleware', () => {
     const res = await request(buildApp()).get('/no-such-route');
     expect(res.status).toBe(404);
     expect(res.body).toEqual({
-      error: { code: 'not_found', message: expect.stringContaining('/no-such-route') },
+      error: 'not_found',
+      message: expect.stringContaining('/no-such-route'),
     });
   });
 
-  it('serializes HttpError with code, message, and details', async () => {
+  it('serializes HttpError with code and message', async () => {
     const res = await request(buildApp()).get('/throw-http');
     expect(res.status).toBe(403);
     expect(res.body).toEqual({
-      error: { code: 'forbidden', message: 'Not allowed', details: { reason: 'rbac' } },
+      error: 'forbidden',
+      message: 'Not allowed',
     });
   });
 
@@ -40,7 +42,8 @@ describe('error middleware', () => {
     const res = await request(buildApp()).get('/throw-generic');
     expect(res.status).toBe(500);
     expect(res.body).toEqual({
-      error: { code: 'internal_error', message: 'Internal Server Error' },
+      error: 'internal_error',
+      message: 'Internal Server Error',
     });
   });
 });

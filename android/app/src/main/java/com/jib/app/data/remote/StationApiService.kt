@@ -17,6 +17,8 @@ data class StationDto(
     @SerializedName("networkOperator") val networkOperator: String?,
     @SerializedName("isAvailable") val isAvailable: Boolean,
     @SerializedName("address") val address: String? = null,
+    @SerializedName("avgRating") val avgRating: Double? = null,
+    @SerializedName("recentCheckInAt") val recentCheckInAt: String? = null,
 )
 
 data class StationsResponse(val stations: List<StationDto>)
