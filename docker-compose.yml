@@ -33,9 +33,9 @@ services:
       JWT_SECRET: ${JWT_SECRET:-dev-only-jwt-secret-change-me}
       FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID:-jib-demo}
       FIREBASE_SERVICE_ACCOUNT_JSON: ${FIREBASE_SERVICE_ACCOUNT_JSON:-}
-      # Connect to the Firebase Auth Emulator running on the host in local dev.
-      # Remove this line (or override with empty string) when using real credentials.
-      FIREBASE_AUTH_EMULATOR_HOST: ${FIREBASE_AUTH_EMULATOR_HOST:-host.docker.internal:9099}
+      # Defaults to empty (production/real-credentials mode).
+      # Set FIREBASE_AUTH_EMULATOR_HOST=host.docker.internal:9099 in .env to use the emulator.
+      FIREBASE_AUTH_EMULATOR_HOST: ${FIREBASE_AUTH_EMULATOR_HOST:-}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
