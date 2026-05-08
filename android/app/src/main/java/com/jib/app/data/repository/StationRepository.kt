@@ -26,4 +26,14 @@ interface StationRepository {
 
     /** Force a network refresh for a single station; throws on network/API errors. */
     suspend fun refreshStation(id: String)
+
+    suspend fun submitStation(
+        idempotencyKey: String,
+        name: String,
+        latitude: Double,
+        longitude: Double,
+        connectorTypes: List<String>,
+        powerKw: Double?,
+        networkOperator: String?,
+    ): Result<Station>
 }

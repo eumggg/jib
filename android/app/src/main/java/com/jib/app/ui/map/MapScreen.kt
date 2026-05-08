@@ -18,10 +18,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,6 +50,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jib.app.auth.AuthViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -66,12 +70,15 @@ private const val PLACE_ZOOM = 14f
 @Composable
 fun MapScreen(
     onStationClick: (stationId: String) -> Unit,
+    onAddStation: () -> Unit = {},
     viewModel: MapViewModel = hiltViewModel(),
     searchViewModel: SearchViewModel = hiltViewModel(),
+    authViewModel: AuthViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
     val searchState by searchViewModel.uiState.collectAsState()
+    val currentUser by authViewModel.currentUser.collectAsStateWithLifecycle()
 
     var locationPermissionGranted by remember {
         mutableStateOf(
@@ -225,6 +232,17 @@ fun MapScreen(
                     "No ${uiState.selectedConnector!!.displayName} stations in this area",
                 )
             }
+        }
+
+        if (currentUser != null) {
+            ExtendedFloatingActionButton(
+                onClick = onAddStation,
+                icon = { Icon(Icons.Filled.Add, contentDescription = null) },
+                text = { Text("Add station") },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp),
+            )
         }
     }
 

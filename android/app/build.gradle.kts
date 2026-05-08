@@ -84,6 +84,7 @@ dependencies {
 
     implementation(libs.play.services.maps)
     implementation(libs.play.services.auth)
+    implementation(libs.play.services.location)
     implementation(libs.maps.compose)
     implementation(libs.places)
     implementation(libs.kotlinx.coroutines.play.services)

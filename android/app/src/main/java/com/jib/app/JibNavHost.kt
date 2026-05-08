@@ -14,11 +14,13 @@ import com.jib.app.auth.LoginScreen
 import com.jib.app.auth.RegisterScreen
 import com.jib.app.ui.map.MapScreen
 import com.jib.app.ui.station.StationDetailScreen
+import com.jib.app.ui.submit.SubmitStationScreen
 
 private const val ROUTE_MAP = "map"
 private const val ROUTE_LOGIN = "login"
 private const val ROUTE_REGISTER = "register"
 private const val ROUTE_STATION = "station/{stationId}"
+private const val ROUTE_SUBMIT = "submit-station"
 
 @Composable
 fun JibNavHost(
@@ -52,7 +54,10 @@ fun JibNavHost(
             )
         }
         composable(ROUTE_MAP) {
-            MapScreen(onStationClick = { id -> navController.navigate("station/$id") })
+            MapScreen(
+                onStationClick = { id -> navController.navigate("station/$id") },
+                onAddStation = { navController.navigate(ROUTE_SUBMIT) },
+            )
         }
         composable(
             route = ROUTE_STATION,
@@ -61,6 +66,12 @@ fun JibNavHost(
             // stationId is read by StationDetailViewModel via SavedStateHandle.
             // Back navigation pops the back stack so the map keeps its camera position.
             StationDetailScreen(onBack = { navController.popBackStack() })
+        }
+        composable(ROUTE_SUBMIT) {
+            SubmitStationScreen(
+                onClose = { navController.popBackStack() },
+                onSubmitted = { navController.popBackStack() },
+            )
         }
     }
 }
