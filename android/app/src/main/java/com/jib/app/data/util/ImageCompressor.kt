@@ -22,10 +22,13 @@ class ImageCompressor @Inject constructor() {
             runCatching {
                 // Pass 1: read bounds only so we can compute an inSampleSize that
                 // keeps memory usage modest even for very large images.
+                // Note: decodeStream returns null when inJustDecodeBounds=true — that's
+                // by design; the dimensions land on boundsOpts. Don't conflate that with
+                // a failure to open the stream.
                 val boundsOpts = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-                context.contentResolver.openInputStream(uri)?.use {
-                    BitmapFactory.decodeStream(it, null, boundsOpts)
-                } ?: error("Could not open image stream")
+                val boundsStream = context.contentResolver.openInputStream(uri)
+                    ?: error("Could not open image stream")
+                boundsStream.use { BitmapFactory.decodeStream(it, null, boundsOpts) }
 
                 val sampleSize = computeInSampleSize(
                     boundsOpts.outWidth,
@@ -34,7 +37,9 @@ class ImageCompressor @Inject constructor() {
                 )
 
                 val decodeOpts = BitmapFactory.Options().apply { inSampleSize = sampleSize }
-                val raw = context.contentResolver.openInputStream(uri)?.use {
+                val decodeStream = context.contentResolver.openInputStream(uri)
+                    ?: error("Could not open image stream")
+                val raw = decodeStream.use {
                     BitmapFactory.decodeStream(it, null, decodeOpts)
                 } ?: error("Decode failed")
 
