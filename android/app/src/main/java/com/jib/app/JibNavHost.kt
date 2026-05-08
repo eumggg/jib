@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.jib.app.auth.AuthViewModel
 import com.jib.app.auth.LoginScreen
 import com.jib.app.auth.RegisterScreen
@@ -58,12 +59,13 @@ fun JibNavHost(
             MapScreen(
                 onStationClick = { id -> navController.navigate("station/$id") },
                 onAddStation = { navController.navigate(ROUTE_SUBMIT) },
-                onProfileClick = { navController.navigate(ROUTE_PROFILE) },
+                onOpenProfile = { navController.navigate(ROUTE_PROFILE) },
             )
         }
         composable(
             route = ROUTE_STATION,
             arguments = listOf(navArgument("stationId") { type = NavType.StringType }),
+            deepLinks = listOf(navDeepLink { uriPattern = "jib://station/{stationId}" }),
         ) {
             StationDetailScreen(onBack = { navController.popBackStack() })
         }
