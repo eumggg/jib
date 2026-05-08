@@ -224,7 +224,14 @@ private fun StationDetailContent(
     ) {
         AvailabilityBadge(isAvailable = station.isAvailable)
         AddressLine(station = station)
-        RatingRow(avgRating = station.avgRating, reviewCount = reviewState.reviews.size)
+        // Station-detail GET returns no avgRating (only the bbox endpoint does), so
+        // fall back to the average of loaded reviews when the field is missing.
+        val derivedAvg = station.avgRating
+            ?: reviewState.reviews
+                .map { it.rating }
+                .takeIf { it.isNotEmpty() }
+                ?.average()
+        RatingRow(avgRating = derivedAvg, reviewCount = reviewState.reviews.size)
         ConnectorChips(types = station.connectorTypeList())
         StationFacts(station = station)
 

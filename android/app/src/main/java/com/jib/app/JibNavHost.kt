@@ -1,7 +1,11 @@
 package com.jib.app
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
@@ -28,11 +32,21 @@ private const val ROUTE_PROFILE = "profile"
 @Composable
 fun JibNavHost(
     authViewModel: AuthViewModel = hiltViewModel(),
+    initialStationId: String? = null,
 ) {
     val navController = rememberNavController()
     val currentUser by authViewModel.currentUser.collectAsStateWithLifecycle()
 
     val startDestination = if (currentUser != null) ROUTE_MAP else ROUTE_LOGIN
+
+    // QA deep-link: navigate to station detail once auth is known and we're on map.
+    var deepLinkConsumed by remember { mutableStateOf(false) }
+    LaunchedEffect(currentUser, initialStationId) {
+        if (!deepLinkConsumed && !initialStationId.isNullOrBlank() && currentUser != null) {
+            navController.navigate("station/$initialStationId")
+            deepLinkConsumed = true
+        }
+    }
 
     NavHost(navController = navController, startDestination = startDestination) {
         composable(ROUTE_LOGIN) {

@@ -12,9 +12,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        // Debug deep-link: `am start ... --es stationId <uuid>` jumps straight to station detail.
+        val initialStationId = intent.getStringExtra("stationId")
         setContent {
             JIBTheme {
-                JibNavHost()
+                JibNavHost(initialStationId = initialStationId)
             }
         }
     }
