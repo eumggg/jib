@@ -31,8 +31,13 @@ services:
       DATABASE_URL: postgres://jib:jib_dev@db:5432/jib
       CORS_ORIGIN: ${CORS_ORIGIN:-*}
       JWT_SECRET: ${JWT_SECRET:-dev-only-jwt-secret-change-me}
-      FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID:-jib-dev}
+      FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID:-jib-demo}
       FIREBASE_SERVICE_ACCOUNT_JSON: ${FIREBASE_SERVICE_ACCOUNT_JSON:-}
+      # Connect to the Firebase Auth Emulator running on the host in local dev.
+      # Remove this line (or override with empty string) when using real credentials.
+      FIREBASE_AUTH_EMULATOR_HOST: ${FIREBASE_AUTH_EMULATOR_HOST:-host.docker.internal:9099}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "3000:3000"
     # Run migrations then start the compiled server.

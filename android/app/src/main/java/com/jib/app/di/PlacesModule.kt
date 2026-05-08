@@ -18,8 +18,8 @@ import javax.inject.Singleton
 object PlacesModule {
     @Provides
     @Singleton
-    fun providePlacesClient(@ApplicationContext ctx: Context): PlacesClient =
-        Places.createClient(ctx)
+    fun providePlacesClient(@ApplicationContext ctx: Context): PlacesClient? =
+        if (Places.isInitialized()) Places.createClient(ctx) else null
 }
 
 @Module

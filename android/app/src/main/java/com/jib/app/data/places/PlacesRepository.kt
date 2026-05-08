@@ -23,20 +23,21 @@ interface PlacesRepository {
 
 @Singleton
 class PlacesRepositoryImpl @Inject constructor(
-    private val placesClient: PlacesClient,
+    private val placesClient: PlacesClient?,
 ) : PlacesRepository {
 
     override suspend fun autocomplete(
         query: String,
         sessionToken: AutocompleteSessionToken,
     ): List<PlaceSuggestion> {
+        val client = placesClient ?: return emptyList()
         if (query.isBlank()) return emptyList()
         val request = FindAutocompletePredictionsRequest.builder()
             .setSessionToken(sessionToken)
             .setQuery(query)
             .build()
         return runCatching {
-            placesClient.findAutocompletePredictions(request).await()
+            client.findAutocompletePredictions(request).await()
                 .autocompletePredictions
                 .map {
                     PlaceSuggestion(
@@ -52,11 +53,12 @@ class PlacesRepositoryImpl @Inject constructor(
         placeId: String,
         sessionToken: AutocompleteSessionToken,
     ): LatLng? {
+        val client = placesClient ?: return null
         val request = FetchPlaceRequest.builder(placeId, listOf(Place.Field.LAT_LNG))
             .setSessionToken(sessionToken)
             .build()
         return runCatching {
-            placesClient.fetchPlace(request).await().place.latLng
+            client.fetchPlace(request).await().place.latLng
         }.getOrNull()
     }
 }
