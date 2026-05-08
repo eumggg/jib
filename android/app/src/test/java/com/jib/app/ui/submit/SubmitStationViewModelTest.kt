@@ -39,6 +39,9 @@ class SubmitStationViewModelTest {
             swLat: Double, swLng: Double, neLat: Double, neLng: Double, connectorType: String?,
         ): Flow<List<Station>> = flowOf(emptyList())
 
+        override fun getStation(id: String): Flow<Station?> = flowOf(null)
+        override suspend fun refreshStation(id: String) = Unit
+
         override suspend fun submitStation(
             idempotencyKey: String,
             name: String,

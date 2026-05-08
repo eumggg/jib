@@ -27,6 +27,12 @@ interface StationRepository {
     /** Force a network refresh for a single station; throws on network/API errors. */
     suspend fun refreshStation(id: String)
 
+    /**
+     * Crowdsourced station submission. Caller passes a stable client UUID as
+     * `idempotencyKey` so retries dedup server-side. The created Station is
+     * also upserted into Room so the next viewport flow emission shows the
+     * new marker on the map.
+     */
     suspend fun submitStation(
         idempotencyKey: String,
         name: String,

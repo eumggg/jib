@@ -47,7 +47,7 @@ class MapViewModelTest {
         override suspend fun submitStation(
             idempotencyKey: String, name: String, latitude: Double, longitude: Double,
             connectorTypes: List<String>, powerKw: Double?, networkOperator: String?,
-        ): Result<Station> = error("not used in this test")
+        ): Result<Station> = Result.failure(UnsupportedOperationException())
     }
 
     private class RecordingRepo : StationRepository {
@@ -64,7 +64,7 @@ class MapViewModelTest {
         override suspend fun submitStation(
             idempotencyKey: String, name: String, latitude: Double, longitude: Double,
             connectorTypes: List<String>, powerKw: Double?, networkOperator: String?,
-        ): Result<Station> = error("not used in this test")
+        ): Result<Station> = Result.failure(UnsupportedOperationException())
     }
 
     @Test

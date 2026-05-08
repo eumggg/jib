@@ -73,8 +73,9 @@ class StationRepositoryImpl @Inject constructor(
                 networkOperator = networkOperator,
             )
         )
+        // Cache the new row so the map's Room flow emits with the new marker.
         val entity = created.toEntity()
-        dao.upsertAll(listOf(entity))
+        dao.upsert(entity)
         entity
     }
 

@@ -52,6 +52,11 @@ class StationDetailViewModelTest {
             override suspend fun refreshStation(id: String) {
                 delay(Long.MAX_VALUE)
             }
+
+            override suspend fun submitStation(
+                idempotencyKey: String, name: String, latitude: Double, longitude: Double,
+                connectorTypes: List<String>, powerKw: Double?, networkOperator: String?,
+            ): Result<Station> = Result.failure(UnsupportedOperationException())
         }
 
         val viewModel = StationDetailViewModel(hangingRepo, handle())
@@ -85,6 +90,11 @@ class StationDetailViewModelTest {
                 override suspend fun refreshStation(id: String) {
                     throw IllegalStateException("offline")
                 }
+
+                override suspend fun submitStation(
+                    idempotencyKey: String, name: String, latitude: Double, longitude: Double,
+                    connectorTypes: List<String>, powerKw: Double?, networkOperator: String?,
+                ): Result<Station> = Result.failure(UnsupportedOperationException())
             }
 
             val viewModel = StationDetailViewModel(repo, handle())

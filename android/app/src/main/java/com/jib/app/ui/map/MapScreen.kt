@@ -23,10 +23,10 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -50,8 +50,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.jib.app.auth.AuthViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -59,6 +57,8 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jib.app.auth.AuthViewModel
 import com.jib.app.ui.search.SearchViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -234,11 +234,12 @@ fun MapScreen(
             }
         }
 
+        // JIB-10: Add Station FAB — only when authenticated.
         if (currentUser != null) {
             ExtendedFloatingActionButton(
                 onClick = onAddStation,
                 icon = { Icon(Icons.Filled.Add, contentDescription = null) },
-                text = { Text("Add station") },
+                text = { Text("Add Station") },
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(16.dp),
